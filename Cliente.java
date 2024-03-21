@@ -1,38 +1,28 @@
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
+import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.Date;
 
-public class DateServer {
+public class DateClient {
     public static void main(String[] args) {
-        // Definir el puerto en el que nuestro servidor estará escuchando.
-        int port = 11111;
+        // Reemplaza esto con la dirección IP del servidor.
+        String serverAddress = "192.168.1.100"; // Ejemplo de dirección IP, cambia esto por la IP de tu servidor.
+        int serverPort = 11111; // El puerto debe coincidir con el servidor.
 
         try {
-            // Crear un ServerSocket para escuchar en el puerto definido.
-            ServerSocket serverSocket = new ServerSocket(port);
-            System.out.println("Servidor iniciado y escuchando en el puerto " + port);
+            // Crear un socket y conectarse al servidor.
+            Socket socket = new Socket(serverAddress, serverPort);
+            System.out.println("Conectado al servidor en " + serverAddress + " en el puerto " + serverPort);
 
-            // El servidor se ejecuta indefinidamente.
-            while (true) {
-                try {
-                    // Esperar una conexión de un cliente.
-                    Socket clientSocket = serverSocket.accept();
-                    System.out.println("Conexión aceptada desde " + clientSocket.getInetAddress());
+            // Leer la respuesta del servidor.
+            BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            String serverResponse = input.readLine();
+            System.out.println("Respuesta del servidor: " + serverResponse);
 
-                    // Escribir la fecha actual en la conexión.
-                    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                    out.println("La fecha y hora actual es: " + new Date().toString());
-
-                    // Cerrar la conexión con el cliente.
-                    clientSocket.close();
-                } catch (IOException e) {
-                    System.err.println("Error al interactuar con el cliente: " + e.getMessage());
-                }
-            }
+            // Cerrar la conexión.
+            socket.close();
         } catch (IOException e) {
-            System.err.println("No se pudo iniciar el servidor en el puerto " + port + ": " + e.getMessage());
+            System.err.println("No se pudo conectar al servidor: " + e.getMessage());
         }
     }
 }
